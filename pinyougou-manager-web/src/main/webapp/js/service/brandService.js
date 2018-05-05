@@ -1,4 +1,7 @@
-app.service('brandService',function ($http) {//品牌服务
+/**
+ * 	AngularJS 服务层(使用$http 与后台交互)
+ */
+app.service("brandService",function($http){
 
     this.findAll=function(){
         return $http.get('../brand/findAll.do');
@@ -23,4 +26,5 @@ app.service('brandService',function ($http) {//品牌服务
     this.dele=function(ids){
         return $http.get('../brand/delete.do?ids='+ids)
     }
-})
+
+});

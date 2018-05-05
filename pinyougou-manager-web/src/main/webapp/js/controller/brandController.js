@@ -1,6 +1,10 @@
-app.controller('brandController',function($scope,$http,$controller,brandService){
+/**
+ * AngularJS 控制层(调用 service进行页面展示)
+ */
+app.controller("brandController",function ($scope,$http,$controller,brandService) {
 
-    $controller('baseController',{$scope:$scope});//伪继承
+    //继承
+    $controller('baseController',{$scope:$scope});
 
     $scope.findAll=function(){
         brandService.findAll().success(
@@ -21,6 +25,7 @@ app.controller('brandController',function($scope,$http,$controller,brandService)
         );
     }
 
+
     //查询实体
     $scope.findOne=function(id){
         brandService.findOne(id).success(
@@ -29,7 +34,6 @@ app.controller('brandController',function($scope,$http,$controller,brandService)
             }
         );
     }
-
 
     //增加
     $scope.save=function(){
@@ -51,7 +55,6 @@ app.controller('brandController',function($scope,$http,$controller,brandService)
     }
 
 
-
     //批量删除
     $scope.dele=function(){
 
@@ -65,6 +68,5 @@ app.controller('brandController',function($scope,$http,$controller,brandService)
             }
         );
     }
-
 
 });
