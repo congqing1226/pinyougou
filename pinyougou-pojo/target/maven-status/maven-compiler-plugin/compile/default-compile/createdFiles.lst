@@ -7,6 +7,7 @@ com\pinyougou\pojo\TbTypeTemplate.class
 com\pinyougou\pojo\TbBrand.class
 com\pinyougou\pojo\TbGoodsExample$GeneratedCriteria.class
 com\pinyougou\pojo\TbOrderItemExample$Criteria.class
+tbSpecification\Specification.class
 com\pinyougou\pojo\TbAreasExample$Criteria.class
 com\pinyougou\pojo\TbFreightTemplateExample$GeneratedCriteria.class
 com\pinyougou\pojo\TbFreightTemplateExample.class

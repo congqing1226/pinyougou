@@ -1,2 +1,10 @@
 .idea
 *.iml
+out
+gen
+*.gitignore
+*.sh
+*.classpath
+*.project
+*.settings
+target
