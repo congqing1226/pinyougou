@@ -67,9 +67,7 @@
   <sql id="Base_Column_List" >
     id, name, first_char
   </sql>
-  <select id="selectOptionList" resultType="java.util.Map">
-  	  select id,name as text from tb_brand
-  </select>
+
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.pinyougou.pojo.TbBrandExample" >
     select
     <if test="distinct" >
@@ -181,4 +179,13 @@
       first_char = #{firstChar,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!--
+    商品模板管理中, 查询出 品牌下拉列表所需的数据 进行展示
+    JSON格式说明: [{"id":1,"text":联想},{"id":3,"text":"三星"},{"id":2,"text":"华为"}]
+   -->
+  <select id="selectOptionList" resultType="java.util.Map">
+      SELECT id,name AS text from tb_brand
+  </select>
+
 </mapper>

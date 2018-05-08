@@ -5,6 +5,7 @@ import entity.PageResult;
 import entity.Result;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author congzi
@@ -53,4 +54,10 @@ public interface BrandService {
      * @param ids
      */
     public void delete(Long[] ids);
+
+    /**
+     * 查询品牌列表
+     * @return
+     */
+    public List<Map> selectOptionList();
 }

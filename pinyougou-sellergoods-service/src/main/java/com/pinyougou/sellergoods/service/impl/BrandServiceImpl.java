@@ -11,6 +11,7 @@ import entity.Result;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author congzi
@@ -66,5 +67,14 @@ public class BrandServiceImpl implements BrandService{
         for (Long id : ids) {
             tbBrandMapper.deleteByPrimaryKey(id);
         }
+    }
+
+    /**
+     * 品牌列表
+     * @return
+     */
+    @Override
+    public List<Map> selectOptionList(){
+        return tbBrandMapper.selectOptionList();
     }
 }

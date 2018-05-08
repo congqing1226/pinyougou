@@ -30,7 +30,7 @@ app.service('specificationService',function($http){
 		return $http.post('../specification/search.do?page='+page+"&rows="+rows, searchEntity);
 	}    	
 	//下拉列表
-	this.selectOptionList=function(){
+	this.findSpecificationList = function(){
 		return $http.get('../specification/selectOptionList.do');
 	}
 });

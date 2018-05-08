@@ -29,6 +29,9 @@ public interface TbBrandMapper {
     int updateByPrimaryKeySelective(TbBrand record);
 
     int updateByPrimaryKey(TbBrand record);
-    
+
+    /**
+     *  查询品牌列表
+     */
     List<Map> selectOptionList();
 }

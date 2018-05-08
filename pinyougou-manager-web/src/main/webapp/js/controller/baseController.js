@@ -41,18 +41,20 @@ app.controller('baseController',function($scope){
     }
 
     //转换json字符串，提取某key的值为字符串列表
-    // $scope.jsonToString=function(jsonString,key){
-    //
-    //     var list= JSON.parse(jsonString);
-    //     var str="";
-    //
-    //     for(var i=0;i<list.length;i++){
-    //         if(i>0){
-    //             str+=",";
-    //         }
-    //         str+=list[i][key];
-    //     }
-    //     return str;
-    // }
+    $scope.jsonToString=function(jsonString,key){
+
+        var list= JSON.parse(jsonString);
+        var str="";
+
+        for(var i=0;i<list.length;i++){
+            if(i>0){
+                str+=",";
+            }
+            str+=list[i][key];
+        }
+        return str;
+    }
+
+
 
 });

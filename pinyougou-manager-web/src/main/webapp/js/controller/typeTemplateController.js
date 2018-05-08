@@ -1,5 +1,7 @@
  //控制层 
-app.controller('typeTemplateController' ,function($scope,$controller   ,typeTemplateService,  brandService,specificationService){	
+app.controller('typeTemplateController' ,
+	function($scope,$controller   ,typeTemplateService,
+			 		brandService,specificationService){
 	
 	$controller('baseController',{$scope:$scope});//继承
 	
@@ -55,19 +57,7 @@ app.controller('typeTemplateController' ,function($scope,$controller   ,typeTemp
 			}		
 		);				
 	}
-	
-	 
-	//批量删除 
-	$scope.dele=function(){			
-		//获取选中的复选框			
-		typeTemplateService.dele( $scope.selectIds ).success(
-			function(response){
-				if(response.success){
-					$scope.reloadList();//刷新列表
-				}						
-			}		
-		);				
-	}
+
 	
 	$scope.searchEntity={};//定义搜索对象 
 	
@@ -81,18 +71,11 @@ app.controller('typeTemplateController' ,function($scope,$controller   ,typeTemp
 		);
 	}
 	
-	$scope.brandList={data:[]};//品牌列表
-	
-	$scope.findBrandList=function(){
-		brandService.selectOptionList().success(
-			function(response){
-				$scope.brandList={data:response};//品牌列表
-			}
-		);		
-	}
+
 	
 	$scope.specificationList={data:[]};//规格列表
-	
+
+
 	$scope.findSpecificationList=function(){
 		specificationService.selectOptionList().success(
 			function(response){
@@ -100,15 +83,57 @@ app.controller('typeTemplateController' ,function($scope,$controller   ,typeTemp
 			}
 		);		
 	}
-	
-	//增加表格行
-	$scope.addTableRow=function(){
-		$scope.entity.customAttributeItems.push({});
+
+
+	//批量删除
+	$scope.dele=function(){
+		//获取选中的复选框
+		typeTemplateService.dele( $scope.selectIds ).success(
+			function(response){
+				if(response.success){
+					$scope.reloadList();//刷新列表
+				}
+			}
+		);
 	}
 	
 	//删除表格行
 	$scope.deleTableRow=function(index){
 		$scope.entity.customAttributeItems.splice(index,1);
 	}
-    
+
+	/**
+	 * 查询 品牌下拉列表数据
+	 * @type {{data: Array}}
+	 */
+	$scope.brandList={data:[]};//品牌列表
+
+	$scope.findBrandList=function(){
+		brandService.selectOptionList().success(
+			function(response){
+				$scope.brandList={data:response};//品牌列表
+			}
+		);
+	}
+
+	/**
+	 * 查询 规格列表数据
+	 * @type {{data: Array}}
+	 */
+	$scope.specificationList={data:[]};
+
+	$scope.findOptionList=function(){
+		specificationService.findSpecificationList().success(
+			function(response){
+                $scope.specificationList = {data:response};//规格列表
+			}
+		);
+	}
+
+	//增加表格行
+	$scope.addTableRow = function(){
+		$scope.entity.customAttributeItems.push({});
+    }
+
+
 });	

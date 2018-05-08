@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author congzi
@@ -104,5 +105,15 @@ public class BrandController {
             e.printStackTrace();
             return new Result(false,"添加失败");
         }
+    }
+
+    /**
+     * 品牌下拉列表
+     * @return
+     */
+    @RequestMapping("/selectOptionList")
+    public List<Map> selectOptionList(){
+
+        return brandService.selectOptionList();
     }
 }

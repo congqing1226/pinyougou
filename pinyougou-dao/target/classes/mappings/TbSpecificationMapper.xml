@@ -80,9 +80,7 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectOptionList" resultType="java.util.Map">
-  	  select id,spec_name as text from tb_specification
-  </select>
+
   <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
     select 
     <include refid="Base_Column_List" />
@@ -169,4 +167,12 @@
     set spec_name = #{specName,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <!--
+    查询规格下拉列表
+  -->
+  <select id="selectOptionList" resultType="java.util.Map">
+      select id ,spec_name as text from tb_specification
+  </select>
+
 </mapper>
