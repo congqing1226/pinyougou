@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angularJS的MVC</title>
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+
+</head>
+<body >
+    <div ng-app="myApp" ng-controller="myCtrl">
+
+        名:<input type="text" ng-model="firstName">
+        姓:<input type="text" ng-model="lastName">
+        <br/>
+        姓名: {{firstName + lastName}}
+
+    </div>
+
+    <script>
+        var app = angular.module("myApp",[]);
+
+        app.controller("myCtrl",function ($scope) {
+            $scope.firstName = "张";
+            $scope.lastName = "三"
+        })
+
+    </script>
+
+</body>
+</html>

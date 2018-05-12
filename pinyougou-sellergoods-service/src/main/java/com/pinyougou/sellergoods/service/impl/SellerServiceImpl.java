@@ -46,6 +46,11 @@ public class SellerServiceImpl implements SellerService {
 	 */
 	@Override
 	public void add(TbSeller seller) {
+		/**
+		 * 0：未审核 1：已审核 2：审核未通过 3：关闭
+		 * 设置初始化状态为 0
+		 */
+		seller.setStatus("0");
 		sellerMapper.insert(seller);		
 	}
 
@@ -159,5 +164,13 @@ public class SellerServiceImpl implements SellerService {
 		Page<TbSeller> page= (Page<TbSeller>)sellerMapper.selectByExample(example);		
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
+	@Override
+	public void updateStatus(String sellerId, String status) {
+
+		TbSeller tbSeller = sellerMapper.selectByPrimaryKey(sellerId);
+		tbSeller.setStatus(status);
+		sellerMapper.updateByPrimaryKey(tbSeller);
+	}
+
 }

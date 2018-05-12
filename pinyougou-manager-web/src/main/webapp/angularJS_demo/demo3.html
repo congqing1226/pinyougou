@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>angularJS的MVC</title>
+    <script type="text/javascript" src="../plugins/angularjs/angular.min.js"></script>
+
+    <script>
+        var app = angular.module('myApp',[]);
+        app.controller('myController',function ($scope) {
+            
+            $scope.add = function () {
+               // return parseInt($scope.x ) + parseInt($scope.y);
+                $scope.z= parseInt($scope.x ) + parseInt($scope.y);
+            }
+        })
+    </script>
+
+</head>
+<body ng-app="myApp" ng-controller="myController" ng-init="myname='老王'" >
+
+    使用者姓名：<input ng-model="myname">
+
+    x: <input type="text" ng-model="x">
+    y: <input type="text" ng-model="y">
+
+    <button ng-click="add()">运算</button>结果{{z}}
+</body>
+</html>

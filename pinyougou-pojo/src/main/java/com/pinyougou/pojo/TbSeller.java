@@ -1,24 +1,52 @@
 package com.pinyougou.pojo;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class TbSeller {
+public class TbSeller implements Serializable {
+    /**
+     *  用户ID
+     */
     private String sellerId;
 
+    /**
+     *  公司名
+     */
     private String name;
 
+    /**
+     * 店铺名称
+     */
     private String nickName;
 
+    /**
+     * 密码
+     */
     private String password;
 
+    /**
+     * EMAIL
+     */
     private String email;
 
+    /**
+     * 公司手机
+     */
     private String mobile;
 
+    /**
+     * 公司电话
+     */
     private String telephone;
 
+    /**
+     * 状态
+     */
     private String status;
 
+    /**
+     * 详细地址
+     */
     private String addressDetail;
 
     private String linkmanName;

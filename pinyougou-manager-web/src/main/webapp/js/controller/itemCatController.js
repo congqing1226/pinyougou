@@ -32,7 +32,10 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 	}
 	
 	//保存 
-	$scope.save=function(){				
+	$scope.save=function(){
+
+		$scope.entity.parentId = $scope.parentId;
+
 		var serviceObject;//服务层对象  				
 		if($scope.entity.id!=null){//如果有ID
 			serviceObject=itemCatService.update( $scope.entity ); //修改  
@@ -43,7 +46,7 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 			function(response){
 				if(response.success){
 					//重新查询 
-		        	$scope.reloadList();//重新加载
+					$scope.findByParentId($scope.parentId);
 				}else{
 					alert(response.message);
 				}
@@ -75,5 +78,52 @@ app.controller('itemCatController' ,function($scope,$controller   ,itemCatServic
 			}			
 		);
 	}
-    
+
+    /**
+	 * 初始化分类数据的 当前级别
+     */
+    $scope.grade = 1;
+    $scope.setGrade = function(value){
+        $scope.grade = value;
+    }
+
+    /**
+	 * 读取商品条件列表
+     */
+    $scope.parentId = 0;
+    $scope.selectList = function(p_entity){
+
+    	if($scope.grade == 1){
+			$scope.entity_1 = null;
+            $scope.entity_2 = null;
+		}
+		if($scope.grade == 2){
+            $scope.entity_1 = p_entity;
+            $scope.entity_2 = null;
+		}
+		if($scope.grade == 3){
+            $scope.entity_2 = p_entity;
+		}
+
+		$scope.findByParentId(p_entity.id);
+
+    }
+
+    /**
+	 * 根据父类ID 查询商品分类
+     * @param parentId
+     */
+	$scope.findByParentId = function(parentId){
+
+		//查询时, 记住当前父类ID,增加分类时是使用
+		$scope.parentId = parentId;
+
+		itemCatService.findByParentId(parentId).success(
+			function(response){
+				$scope.list = response;
+            }
+		)
+    }
+
+
 });	

@@ -82,8 +82,8 @@ app.controller('sellerController' ,function($scope,$controller   ,sellerService)
 				if(response.success){
 					$scope.reloadList();//刷新列表
 				}else{
-					alert("失败");
-				}				
+					alert("审核状态修改失败!!");
+				}
 			}
 		);
 	}
