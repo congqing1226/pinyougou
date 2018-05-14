@@ -1,6 +1,8 @@
 package com.pinyougou.shop.controller;
 import java.util.List;
 
+import com.pinyougou.pojogroup.Goods;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,13 +49,20 @@ public class GoodsController {
 	 * @return
 	 */
 	@RequestMapping("/add")
-	public Result add(@RequestBody TbGoods goods){
+	public Result add(@RequestBody Goods goods){
+		//设置商品的商家ID
+		String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
+
+		goods.getGoods().setSellerId(sellerId);
+
 		try {
 			goodsService.add(goods);
-			return new Result(true, "增加成功");
+			Result result =  new Result(true, "增加成功");
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Result(false, "增加失败");
+			Result result  = new Result(false, "增加失败");
+			return result;
 		}
 	}
 	
@@ -101,7 +110,7 @@ public class GoodsController {
 	
 		/**
 	 * 查询+分页
-	 * @param brand
+	 * @param
 	 * @param page
 	 * @param rows
 	 * @return

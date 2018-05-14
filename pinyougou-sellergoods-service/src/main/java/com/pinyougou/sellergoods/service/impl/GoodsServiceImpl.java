@@ -1,5 +1,9 @@
 package com.pinyougou.sellergoods.service.impl;
 import java.util.List;
+
+import com.pinyougou.mapper.TbGoodsDescMapper;
+import com.pinyougou.pojo.TbGoodsDesc;
+import com.pinyougou.pojogroup.Goods;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
@@ -22,7 +26,10 @@ public class GoodsServiceImpl implements GoodsService {
 
 	@Autowired
 	private TbGoodsMapper goodsMapper;
-	
+
+	@Autowired
+	private TbGoodsDescMapper descMapper;
+
 	/**
 	 * 查询全部
 	 */
@@ -36,7 +43,7 @@ public class GoodsServiceImpl implements GoodsService {
 	 */
 	@Override
 	public PageResult findPage(int pageNum, int pageSize) {
-		PageHelper.startPage(pageNum, pageSize);		
+		PageHelper.startPage(pageNum, pageSize);
 		Page<TbGoods> page=   (Page<TbGoods>) goodsMapper.selectByExample(null);
 		return new PageResult(page.getTotal(), page.getResult());
 	}
@@ -45,19 +52,27 @@ public class GoodsServiceImpl implements GoodsService {
 	 * 增加
 	 */
 	@Override
-	public void add(TbGoods goods) {
-		goodsMapper.insert(goods);		
+	public void add(Goods goods) {
+
+		TbGoods tbGoods = goods.getGoods();
+		tbGoods.setAuditStatus("0");
+		goodsMapper.insert(tbGoods);
+
+		TbGoodsDesc goodsDesc = goods.getGoodsDesc();
+		goodsDesc.setGoodsId(tbGoods.getId());
+
+		descMapper.insert(goodsDesc);
 	}
 
-	
+
 	/**
 	 * 修改
 	 */
 	@Override
 	public void update(TbGoods goods){
 		goodsMapper.updateByPrimaryKey(goods);
-	}	
-	
+	}
+
 	/**
 	 * 根据ID获取实体
 	 * @param id
@@ -75,19 +90,19 @@ public class GoodsServiceImpl implements GoodsService {
 	public void delete(Long[] ids) {
 		for(Long id:ids){
 			goodsMapper.deleteByPrimaryKey(id);
-		}		
+		}
 	}
-	
-	
-		@Override
+
+
+	@Override
 	public PageResult findPage(TbGoods goods, int pageNum, int pageSize) {
 		PageHelper.startPage(pageNum, pageSize);
-		
+
 		TbGoodsExample example=new TbGoodsExample();
 		Criteria criteria = example.createCriteria();
-		
-		if(goods!=null){			
-						if(goods.getSellerId()!=null && goods.getSellerId().length()>0){
+
+		if(goods!=null){
+			if(goods.getSellerId()!=null && goods.getSellerId().length()>0){
 				criteria.andSellerIdLike("%"+goods.getSellerId()+"%");
 			}
 			if(goods.getGoodsName()!=null && goods.getGoodsName().length()>0){
@@ -111,11 +126,11 @@ public class GoodsServiceImpl implements GoodsService {
 			if(goods.getIsDelete()!=null && goods.getIsDelete().length()>0){
 				criteria.andIsDeleteLike("%"+goods.getIsDelete()+"%");
 			}
-	
+
 		}
-		
-		Page<TbGoods> page= (Page<TbGoods>)goodsMapper.selectByExample(example);		
+
+		Page<TbGoods> page= (Page<TbGoods>)goodsMapper.selectByExample(example);
 		return new PageResult(page.getTotal(), page.getResult());
 	}
-	
+
 }
