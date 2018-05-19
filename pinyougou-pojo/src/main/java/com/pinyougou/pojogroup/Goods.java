@@ -32,6 +32,15 @@ public class Goods implements Serializable{
      */
     private List<TbItem> itemList;
 
+    private List skuList;
+
+    public List getSkuList() {
+        return skuList;
+    }
+
+    public void setSkuList(List skuList) {
+        this.skuList = skuList;
+    }
 
     public TbGoods getGoods() {
         return goods;

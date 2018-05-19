@@ -39,7 +39,7 @@ app.controller('goodsController' ,function($scope,$controller,
 		 * 设置富文本 编辑器的内容
          */
         $scope.entity.goodsDesc.introduction=editor.html();
-		debugger;
+
 		var serviceObject;//服务层对象  				
 		if($scope.entity.id!=null){//如果有ID
 			serviceObject=goodsService.update( $scope.entity ); //修改  
@@ -90,14 +90,7 @@ app.controller('goodsController' ,function($scope,$controller,
 
 
 	//查询一级分类
-	// $scope.selectItemCat1List = function(){
-	// 	debugger;
-	// 	itemCatService.findByParentId(0).success(
-	// 		function (response) {
-	// 			$scope.itemCat1List = response;
-     //        }
-	// 	);
-    // }
+
     $scope.selectItemCat1List=function(){
 
         itemCatService.findByParentId(0).success(
@@ -150,31 +143,35 @@ app.controller('goodsController' ,function($scope,$controller,
         );
     });
 
-    // //监控模板ID ，读取品牌列表
-    // $scope.$watch('entity.goods.typeTemplateId',function (newValue,oldValue) {
-    //
-		// 	//查询品牌列表 和 扩展属性
-		// 	typeTemplateService.findOne(newValue).success(
-		// 		function(response){
-		// 			//获取模板数据
-		// 			$scope.typeTemplate = response;
-    //
-		// 			//品牌列表 json数据转换为对象类型
-    //                 $scope.typeTemplate.brandIds= JSON.parse($scope.typeTemplate.brandIds);
-    //
-    //                 //扩展属性
-    //                 $scope.entity.goodsDesc.customAttributeItems = JSON.parse($scope.typeTemplate.customAttributeItems);
-    //             }
-		// 	);
-    //
-    //     //读取规格列表
-    //     typeTemplateService.findSpecList(newValue).success(
-    //         function(response){
-    //             $scope.specList=response; //规格列表
-    //         }
-    //     );
-    //
-    // })
+    /**
+	 * 监控模板ID, 读取品牌列表
+     */
+    $scope.$watch('entity.goods.typeTemplateId', function(newValue, oldValue){
+
+    		//根据模板ID,查询品牌列表
+    		typeTemplateService.findOne(newValue).success(
+
+    			function(response){
+					$scope.typeTemplate = response;
+					$scope.typeTemplate.brandIds = JSON.parse($scope.typeTemplate.brandIds);
+
+                    $scope.entity.goodsDesc.customAttributeItems=JSON.parse( $scope.typeTemplate.customAttributeItems);//扩展属性
+                }
+			);
+
+    		// 读取规格列表
+
+			typeTemplateService.findSpecList(newValue).success(
+
+				function(response){
+					$scope.specList = response;
+                }
+			)
+
+        }
+	);
+
+
 
     //上传文件
     $scope.uploadFile=function(){
@@ -199,7 +196,7 @@ app.controller('goodsController' ,function($scope,$controller,
 	 *	goods
 	 *  goodsDesc 表中的itemImages字段,是一个数组,存放的是 图片的地址
      */
-	$scope.entity={goods:{},goodsDesc:{itemImages:[]}};
+    $scope.entity={ goods:{},goodsDesc:{itemImages:[],specificationItems:[]} };//定义实体结构
 
     /**
 	 * 向图片列表添加图片
@@ -217,8 +214,99 @@ app.controller('goodsController' ,function($scope,$controller,
     }
 
 
+    /**
+	 * 更新规格选项
+	 * 		$event: 监控复选框的 勾选状态
+	 *		name: 规格 值
+	 *		value : 规格下所属 规格选项的值
+     */
+
+	$scope.updateSpecAttribute = function($event, name , value){
+
+		//判断当前操作的规格名称, 是否在 $scope.entity.goodsDesc.specificationItems 这个集合变量中
+        var specList=  $scope.entity.goodsDesc.specificationItems;
+
+        /**
+		 * 首先要定义好JSON
+		 * 		[{"attributeName":规格名称,"attributeValue":["规格选项 1","规格选项 2"]}]
+         */
+		for(var i=0; i<specList.length; i++){
+			//如果规格存在
+			if(specList[i].attributeName == name){
+
+				//并且选中了 规格中的规格选项,需要保存规格选项
+				if($event.target.checked){
+                    specList[i].attributeValue.push(value);
+				}else{
+                    //如果是取消了选项,就移除
+					specList[i].attributeValue.splice(specList[i].attributeValue.indexOf(value),1);
+				}
+				// 结束循环
+				return ;
+			}
+		}
+
+        //如果规格不存在,直接保存到 列表
+        specList.push({attributeName:name,attributeValue:[value]});
 
 
+    }
+
+    /**
+	 * 构建SKU 表格
+     */
+	$scope.createSKUTable = function(){
+
+		//初始化一个集合
+		var list = [{spec:{},price:0,stockCount:99999}];
+
+		//取出该商品之前的规格结果集
+        var specList=  $scope.entity.goodsDesc.specificationItems;
+
+        /**
+		 * 循环集合
+		 * 	[{"attributeName":规格名称,"attributeValue":["规格选项 1","规格选项 2"]}]
+         */
+
+        for(var i=0;i< specList.length;i++ ){//循环规格
+            if(specList[i].attributeValue.length>0){
+                list=addColumns(list, specList[i].attributeName, specList[i].attributeValue );
+            }
+
+        }
+
+		//生成SKU 列表
+		$scope.entity.skuList = list;
+    }
+
+    /**
+	 * 深克隆,克隆一个全新的集合,完成动态添加的效果
+	 * 		参数1: list集合 参数2:规格名 参数3:规格选项
+     * @param list
+     */
+    addColumns = function(list,columnName,columnValues){
+
+		/**
+		 * 初始化一个新集合(深克隆产生的新的集合对象)
+		 * 		原纪录 * 规格选项个数 = 新的列表
+		 */
+		var newList = [];
+
+		for(var i=0; i<list.length; i++){
+			for(var j=0; j<columnValues.length; j++){
+
+				/**
+				 * 深克隆
+				 * JSON.parse() 方法用于将一个 JSON 字符串转换为对象。
+				 * JSON.stringify() 方法用于将 JavaScript 值转换为 JSON 字符串。
+				 */
+				var newRow = JSON.parse(JSON.stringify(list[i]));
+				newRow.spec[columnName] = columnValues[j];
+				newList.push(newRow);
+			}
+		}
+		return newList;
+    }
 
 
 });	
