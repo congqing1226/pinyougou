@@ -33,7 +33,7 @@
 </head>
 
 <body class="hold-transition skin-red sidebar-mini"
-	  ng-app="pinyougou" ng-controller="goodsController" ng-init="selectItemCat1List()" >
+	  ng-app="pinyougou" ng-controller="goodsController" ng-init="selectItemCat1List();findOne()" >
 
             <!-- 正文区域 -->
             <section class="content">
@@ -227,10 +227,13 @@
 			                                <div class="col-md-2 title">{{pojo.text}}</div>
 					                        <div class="col-md-10 data">
 
-												<!--遍历 list中的Map-->
+												<!--遍历 list中的Map
+													ng-checked :判断复选框 是否勾选
+												-->
 					                            <span ng-repeat="p in pojo.options">
 					                            	<input  type="checkbox"
 														ng-click="updateSpecAttribute($event,pojo.text,p.optionName);createSKUTable();"
+															ng-checked="checkAttributeValue(pojo.text,p.optionName)"
 													>{{p.optionName}}
 					                            </span>
 

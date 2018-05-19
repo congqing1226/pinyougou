@@ -75,5 +75,21 @@ app.controller('goodsController' ,function($scope,$controller   ,goodsService){
 			}			
 		);
 	}
-    
+
+
+
+    //更新状态
+    $scope.updateStatus=function(status){
+
+        goodsService.updateStatus($scope.selectIds,status).success(
+            function(response){
+                if(response.success){
+                    $scope.reloadList();
+                }else{
+                    alert(response.message);
+                }
+            }
+        );
+        $scope.selectIds=[];
+    }
 });	

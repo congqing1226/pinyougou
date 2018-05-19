@@ -24,26 +24,26 @@ public class GoodsController {
 
 	@Reference
 	private GoodsService goodsService;
-	
+
 	/**
 	 * 返回全部列表
 	 * @return
 	 */
 	@RequestMapping("/findAll")
-	public List<TbGoods> findAll(){			
+	public List<TbGoods> findAll(){
 		return goodsService.findAll();
 	}
-	
-	
+
+
 	/**
 	 * 返回全部列表
 	 * @return
 	 */
 	@RequestMapping("/findPage")
-	public PageResult  findPage(int page,int rows){			
+	public PageResult  findPage(int page,int rows){
 		return goodsService.findPage(page, rows);
 	}
-	
+
 	/**
 	 * 增加
 	 * @param goods
@@ -58,7 +58,7 @@ public class GoodsController {
 		String sellerId = SecurityContextHolder.getContext().getAuthentication().getName();
 
 		//设置商家ID
-		goods.getTbGoods().setSellerId(sellerId);
+		goods.getGoods().setSellerId(sellerId);
 
 		try{
 			goodsService.add(goods);
@@ -70,33 +70,35 @@ public class GoodsController {
 			return result;
 		}
 	}
-	
+
 	/**
 	 * 修改
 	 * @param goods
 	 * @return
 	 */
 	@RequestMapping("/update")
-	public Result update(@RequestBody TbGoods goods){
+	public Result update(@RequestBody Goods goods){
 		try {
 			goodsService.update(goods);
-			return new Result(true, "修改成功");
+			Result result = new Result(true, "修改成功");
+			return result;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new Result(false, "修改失败");
+			Result result = new Result(true, "修改失败");
+			return result;
 		}
-	}	
-	
+	}
+
 	/**
 	 * 获取实体
 	 * @param id
 	 * @return
 	 */
 	@RequestMapping("/findOne")
-	public TbGoods findOne(Long id){
-		return goodsService.findOne(id);		
+	public Goods findOne(Long id){
+		return goodsService.findOne(id);
 	}
-	
+
 	/**
 	 * 批量删除
 	 * @param ids
@@ -106,23 +108,38 @@ public class GoodsController {
 	public Result delete(Long [] ids){
 		try {
 			goodsService.delete(ids);
-			return new Result(true, "删除成功"); 
+			return new Result(true, "删除成功");
 		} catch (Exception e) {
 			e.printStackTrace();
 			return new Result(false, "删除失败");
 		}
 	}
-	
-		/**
+
+	/**
 	 * 查询+分页
-	 * @param brand
+	 *
 	 * @param page
 	 * @param rows
 	 * @return
 	 */
 	@RequestMapping("/search")
 	public PageResult search(@RequestBody TbGoods goods, int page, int rows  ){
-		return goodsService.findPage(goods, page, rows);		
+		return goodsService.findPage(goods, page, rows);
 	}
-	
+
+
+	/**
+	 * 修改审核状态
+	 */
+	@RequestMapping("/updateStatus")
+	public Result updateStatus(Long[] ids, String status){
+		try {
+			goodsService.updateStatus(ids, status);
+			return new Result(true, "修改状态成功");
+		} catch (Exception e) {
+			e.printStackTrace();
+			return new Result(false, "修改状态失败");
+		}
+	}
+
 }
