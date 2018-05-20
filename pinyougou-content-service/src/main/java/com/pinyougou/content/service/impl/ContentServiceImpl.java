@@ -2,7 +2,6 @@ package com.pinyougou.content.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.github.pagehelper.Page;
@@ -17,6 +16,7 @@ import com.pinyougou.pojo.TbContentExample.Criteria;
 import com.pinyougou.content.service.ContentService;
 
 import entity.PageResult;
+import org.springframework.data.redis.core.RedisTemplate;
 
 /**
  * 服务实现层
@@ -52,9 +52,9 @@ public class ContentServiceImpl implements ContentService {
 	 */
 	@Override
 	public void add(TbContent content) {
-		contentMapper.insert(content);	
-		
-		clearCache(content.getCategoryId());//清除缓存
+		contentMapper.insert(content);
+		//清除缓存
+		clearCache(content.getCategoryId());
 	}
 
 	
@@ -62,14 +62,15 @@ public class ContentServiceImpl implements ContentService {
 	 * 修改
 	 */
 	@Override
-	public void update(TbContent content){
-		//得到原来的内容
+	public void update(TbContent content){//得到原来的内容
 		TbContent content_old = contentMapper.selectByPrimaryKey(content.getId());
-		
+
 		contentMapper.updateByPrimaryKey(content);
-		
-		clearCache(content_old.getCategoryId());//清除原来的缓存
-		clearCache(content.getCategoryId());//清除更改后  缓存
+		//清除原来的缓存
+		clearCache(content_old.getCategoryId());
+		//清除更改后  缓存
+		clearCache(content.getCategoryId());
+
 	}	
 	
 	/**
@@ -88,9 +89,10 @@ public class ContentServiceImpl implements ContentService {
 	@Override
 	public void delete(Long[] ids) {
 		for(Long id:ids){
-			clearCache(contentMapper.selectByPrimaryKey(id).getCategoryId()  );//清除缓存
+			//清除缓存
+			clearCache(contentMapper.selectByPrimaryKey(id).getCategoryId()  );
 			contentMapper.deleteByPrimaryKey(id);
-		}		
+		}
 	}
 	
 	
@@ -129,39 +131,43 @@ public class ContentServiceImpl implements ContentService {
 	
 	
 	@Autowired
-	private RedisTemplate<String, TbContent>  redisTemplate;
+	private RedisTemplate<String, TbContent> redisTemplate;
 		
 	@Override
 	public List<TbContent> findByCategoryKey(String key) {
-		
-		//获取广告
-		List<TbContent> contentList = (List<TbContent>) redisTemplate.boundHashOps("content").get(key);
-		
-		if(contentList==null){//如果缓存中没有 
-			TbContentCategoryExample example=new TbContentCategoryExample();
-			com.pinyougou.pojo.TbContentCategoryExample.Criteria criteria = example.createCriteria();
+
+		//先查询缓存
+		List<TbContent> contentList = (List<TbContent>)redisTemplate.boundHashOps("content").get(key);
+
+		if(contentList == null){
+			TbContentCategoryExample example = new TbContentCategoryExample();
+			TbContentCategoryExample.Criteria criteria = example.createCriteria();
+
 			criteria.andContentKeyEqualTo(key);
+			//开启状态
 			criteria.andStatusEqualTo("1");
-			//返回分类列表
-			List<TbContentCategory> categotyList = contentCategoryMapper.selectByExample(example);
-			if(categotyList.size()==0){
+			List<TbContentCategory> categoryList = contentCategoryMapper.selectByExample(example);
+
+			if(categoryList.size()==0){
 				return new ArrayList();
 			}
-			
-			//查询广告列表
-			TbContentExample example2=new TbContentExample();
-			Criteria criteria2 = example2.createCriteria();
-			criteria2.andCategoryIdEqualTo(categotyList.get(0).getId());
+
+			TbContentExample contentExample = new TbContentExample();
+			Criteria criteria2 = contentExample.createCriteria();
+
+			criteria2.andCategoryIdEqualTo(categoryList.get(0).getId());
 			criteria2.andStatusEqualTo("1");
-			contentList = contentMapper.selectByExample(example2);
-			
-			redisTemplate.boundHashOps("content").put(key, contentList);//存入缓存
+			contentList = contentMapper.selectByExample(contentExample);
+
+			//存入缓存
+			redisTemplate.boundHashOps("content").put(key,contentList);
 			System.out.println("从数据库中查询数据放入缓存");
-			
+
 		}else{
-			System.out.println("从缓存中提取数据");
-		}	
-		
+			System.out.println("从缓存中查询数据");
+
+		}
+
 		return contentList;
 	}
 	
@@ -169,11 +175,12 @@ public class ContentServiceImpl implements ContentService {
 	
 	//清除缓存
 	private void clearCache(Long categoryId){
-		//广告分类对象
-		TbContentCategory contentCategory = contentCategoryMapper.selectByPrimaryKey(categoryId);
-		String key = contentCategory.getContentKey();
-		System.out.println("清除缓存"+key);
-		redisTemplate.boundHashOps("content").delete(key);
+		TbContentCategory tbContentCategory = contentCategoryMapper.selectByPrimaryKey(categoryId);
+
+		String contentKey = tbContentCategory.getContentKey();
+		System.out.println("清除缓存" +  contentKey);
+
+		redisTemplate.boundHashOps("content").delete(contentKey);
 	}
 	
 }

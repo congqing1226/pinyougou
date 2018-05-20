@@ -3,6 +3,7 @@
   <component name="FrameworkDetectionExcludesConfiguration">
     <file type="web" url="file://$PROJECT_DIR$/pinyougou-content-service" />
     <file type="web" url="file://$PROJECT_DIR$/pinyougou-manager-web" />
+    <file type="web" url="file://$PROJECT_DIR$/pinyougou-portal-web" />
     <file type="web" url="file://$PROJECT_DIR$/pinyougou-sellergoods-service" />
     <file type="web" url="file://$PROJECT_DIR$/pinyougou-shop-web" />
   </component>
@@ -19,6 +20,8 @@
         <option value="$PROJECT_DIR$/pinyougou-parent/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-content-interface/pom.xml" />
         <option value="$PROJECT_DIR$/pinyougou-content-service/pom.xml" />
+        <option value="$PROJECT_DIR$/pinyougou-portal-web/pom.xml" />
+        <option value="$PROJECT_DIR$/spring-redis/pom.xml" />
       </list>
     </option>
   </component>
