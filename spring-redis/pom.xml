@@ -70,6 +70,12 @@
             <artifactId>spring-data-redis</artifactId>
             <version>1.7.2.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-solr</artifactId>
+            <version>1.5.5.RELEASE</version>
+        </dependency>
+
 
     </dependencies>
     <build>

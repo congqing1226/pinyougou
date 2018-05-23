@@ -183,7 +183,8 @@ app.controller('goodsController' ,function($scope,$controller,$location,
 					if(typeof($location.search()["id"]) == 'undefined'){
 
 					}
-                    $scope.entity.goodsDesc.customAttributeItems=JSON.parse( $scope.typeTemplate.customAttributeItems);//扩展属性
+                    //扩展属性 读取模板中的扩展属性赋给商品的扩展属性。
+                    $scope.entity.goodsDesc.customAttributeItems=JSON.parse( $scope.typeTemplate.customAttributeItems);
                 }
 			);
 
@@ -253,7 +254,6 @@ app.controller('goodsController' ,function($scope,$controller,$location,
 
 		//判断当前操作的规格名称, 是否在 $scope.entity.goodsDesc.specificationItems 这个集合变量中
         var specList=  $scope.entity.goodsDesc.specificationItems;
-
         /**
 		 * 首先要定义好JSON
 		 * 		[{"attributeName":规格名称,"attributeValue":["规格选项 1","规格选项 2"]}]
@@ -284,7 +284,6 @@ app.controller('goodsController' ,function($scope,$controller,$location,
 	 * 构建SKU 表格
      */
 	$scope.createSKUTable = function(){
-
 		//初始化一个集合
 		var list = [{spec:{},price:0,stockCount:99999}];
 
@@ -300,9 +299,7 @@ app.controller('goodsController' ,function($scope,$controller,$location,
             if(specList[i].attributeValue.length>0){
                 list=addColumns(list, specList[i].attributeName, specList[i].attributeValue );
             }
-
         }
-
 		//生成SKU 列表
 		$scope.entity.skuList = list;
     }
