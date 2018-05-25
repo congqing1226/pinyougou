@@ -1,6 +1,8 @@
 package com.pinyougou.content.service.impl;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
@@ -137,7 +139,7 @@ public class ContentServiceImpl implements ContentService {
 	public List<TbContent> findByCategoryKey(String key) {
 
 		//先查询缓存
-		List<TbContent> contentList = (List<TbContent>)redisTemplate.boundHashOps("content").get(key);
+		List contentList = JSON.parseArray((String) redisTemplate.boundHashOps("content").get(key));
 
 		if(contentList == null){
 			TbContentCategoryExample example = new TbContentCategoryExample();
@@ -158,9 +160,10 @@ public class ContentServiceImpl implements ContentService {
 			criteria2.andCategoryIdEqualTo(categoryList.get(0).getId());
 			criteria2.andStatusEqualTo("1");
 			contentList = contentMapper.selectByExample(contentExample);
-
+			//將list集合轉換為JSON的字符串
+			String contentListJson = JSON.toJSONString(contentList);
 			//存入缓存
-			redisTemplate.boundHashOps("content").put(key,contentList);
+			redisTemplate.boundHashOps("content").put(key,contentListJson);
 			System.out.println("从数据库中查询数据放入缓存");
 
 		}else{
@@ -180,7 +183,7 @@ public class ContentServiceImpl implements ContentService {
 		String contentKey = tbContentCategory.getContentKey();
 		System.out.println("清除缓存" +  contentKey);
 
-		redisTemplate.boundHashOps("content").delete(contentKey);
+		redisTemplate.boundHashOps("content").delete(String.valueOf(categoryId));
 	}
 	
 }

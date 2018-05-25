@@ -10,6 +10,7 @@ import com.pinyougou.pojo.TbSpecificationOptionExample;
 import com.pinyougou.search.service.ItemSearchService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.solr.core.SolrTemplate;
 import org.springframework.data.solr.core.query.*;
@@ -40,6 +41,10 @@ public class ItemSearchServiceImpl implements ItemSearchService {
 
         Map<String,Object> map = new HashMap<>();
 
+        //关键字空格处理
+        String keywords = (String) searchMap.get("keywords");
+        searchMap.put("keywords",keywords.replace(" ",""));
+
         //1) 按照关键字 查询高亮显示
         Map hightMap = searchList(searchMap);
         map.putAll(hightMap);
@@ -64,7 +69,12 @@ public class ItemSearchServiceImpl implements ItemSearchService {
     public Map searchList(Map searchMap){
 
         Map map = new HashMap();
-        HighlightQuery highlightQuery = new SimpleHighlightQuery();
+
+        /**
+         *  1) 购建查询条件-按照关键字查询
+         */
+        Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
+        HighlightQuery highlightQuery = new SimpleHighlightQuery(criteria);
 
         //设置高亮的域, 商品标题
         HighlightOptions options = new HighlightOptions().addField("item_title");
@@ -75,11 +85,6 @@ public class ItemSearchServiceImpl implements ItemSearchService {
         //设置高亮选项
         highlightQuery.setHighlightOptions(options);
 
-        /**
-         *  1) 购建查询条件-按照关键字查询
-         */
-        Criteria criteria = new Criteria("item_keywords").is(searchMap.get("keywords"));
-        highlightQuery.addCriteria(criteria);
 
         /**
          * 2) 构建筛选条件-按分类筛选
@@ -97,7 +102,7 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             highlightQuery.addFilterQuery(filterQuery);
         }
 
-        //   1.4 构建筛选条件，按规格筛选
+        //  4) 按规格筛选
         Map<String,Object>  specMap = (Map) searchMap.get("spec");
 
         if(searchMap.get("spec")!=null) {
@@ -112,7 +117,64 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             }
         }
 
-            //************** 获取高亮结果集 ****************
+        // 5) 按价格筛选
+        if(!"".equals(searchMap.get("price"))){
+
+            String[] prices = (searchMap.get("price").toString()).split("-");
+            if(!prices[0].equals("0")){
+                //开始区间不等于 0
+
+                Criteria criteria1 = new Criteria("item_price").greaterThanEqual(prices[0]);
+                FilterQuery fq = new SimpleFacetQuery(criteria1);
+                highlightQuery.addFilterQuery(fq);
+            }
+
+            if(!"*".equals(prices[1])){
+                //结束区间不等于 *
+
+                Criteria filterCriteria=new  Criteria("item_price").lessThanEqual(prices[1]);
+                FilterQuery filterQuery=new SimpleFilterQuery(filterCriteria);
+                highlightQuery.addFilterQuery(filterQuery);
+
+            }
+
+        }
+
+        // 6) 分页查询
+        //提取页码
+        Integer pageNo = (Integer) searchMap.get("pageNo");
+        if(pageNo == null){
+            pageNo = 1;
+        }
+
+        //每页显示条数
+        Integer pageSize = (Integer) searchMap.get("pageSize");
+        if(pageSize == null){
+            pageSize = 20;
+        }
+
+        //limit 参数 1:起始条数
+        highlightQuery.setOffset((pageNo - 1)*pageSize);
+        highlightQuery.setRows(pageSize);
+
+        // 7) 按价格排序
+
+        if(null != searchMap.get("sortField") && !"".equals(searchMap.get("sortField"))){
+            //新品  由近到远
+            if("updatetime".equals(searchMap.get("sortField"))){
+                highlightQuery.addSort(new Sort(Sort.Direction.DESC,"item_updatetime"));
+            }else{
+                //价格  由高到低 或由低到高
+                if("ASC".equals(searchMap.get("sort"))){
+                    highlightQuery.addSort(new Sort(Sort.Direction.ASC,"item_price"));
+                }else{
+                    highlightQuery.addSort(new Sort(Sort.Direction.DESC,"item_price"));
+                }
+            }
+        }
+
+
+        //************** 获取高亮结果集 ****************
         HighlightPage<TbItem> tbItems = solrTemplate.queryForHighlightPage(highlightQuery, TbItem.class);
 
         //循环高亮入口集合
@@ -125,8 +187,10 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             }
         }
         map.put("rows",tbItems.getContent());
-
-
+        //返回总页数
+        map.put("totalPages",tbItems.getTotalPages());
+        //返回总记录数
+        map.put("total",tbItems.getTotalElements());
         return map;
     }
 

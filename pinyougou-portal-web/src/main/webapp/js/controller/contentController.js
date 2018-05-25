@@ -8,6 +8,10 @@ app.controller("contentController",function($scope,contentService){
 				$scope.contentList[key]=response;
 			}
 		);		
-	}	
-	
+	}
+    //搜索  （传递参数）
+    $scope.search=function(){
+        location.href="http://localhost:9103/search.html#?keywords="+$scope.keywords;
+	}
+
 });
