@@ -6,6 +6,8 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="jmstest" />
+        <module name="pingyougou-staticpage-interface" />
         <module name="pinyougou-common" />
         <module name="pinyougou-content-interface" />
         <module name="pinyougou-content-service" />
@@ -19,13 +21,18 @@
         <module name="pinyougou-sellergoods-interface" />
         <module name="pinyougou-sellergoods-service" />
         <module name="pinyougou-shop-web" />
+        <module name="pinyougou-sms" />
         <module name="pinyougou-solr-util" />
+        <module name="pinyougou-staticpage-interface" />
+        <module name="pinyougou-staticpage-service" />
+        <module name="pinyougou-user-interface" />
+        <module name="pinyougou-user-service" />
         <module name="pinyougoucontentinterface" />
-        <module name="spring-redis" />
-        <module name="spring-solr" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
+      <module name="jmstest" target="1.8" />
+      <module name="pingyougou-staticpage-interface" target="1.8" />
       <module name="pinyougou-common" target="1.8" />
       <module name="pinyougou-content-interface" target="1.8" />
       <module name="pinyougou-content-service" target="1.8" />
@@ -39,11 +46,18 @@
       <module name="pinyougou-search-web" target="1.8" />
       <module name="pinyougou-sellergoods-interface" target="1.8" />
       <module name="pinyougou-sellergoods-service" target="1.8" />
+      <module name="pinyougou-service-page" target="1.8" />
       <module name="pinyougou-shop-web" target="1.8" />
+      <module name="pinyougou-sms" target="1.8" />
       <module name="pinyougou-solr-util" target="1.8" />
+      <module name="pinyougou-staticpage-interface" target="1.8" />
+      <module name="pinyougou-staticpage-service" target="1.8" />
+      <module name="pinyougou-user-interface" target="1.8" />
+      <module name="pinyougou-user-service" target="1.8" />
       <module name="pinyougoucontentinterface" target="1.8" />
       <module name="spring-redis" target="1.8" />
       <module name="spring-solr" target="1.8" />
+      <module name="springfreemarkerDemo" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

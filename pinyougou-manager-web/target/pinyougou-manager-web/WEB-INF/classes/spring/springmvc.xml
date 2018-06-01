@@ -33,6 +33,13 @@
 		<property name="maxUploadSize" value="5242880"></property>
 	</bean>
 
+	<!--配置 freemarker-->
+	<bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+		<property name="templateLoaderPath" value="/WEB-INF/ftl/" />
+		<property name="defaultEncoding" value="UTF-8" />
+
+	</bean>
+
 
 	<!-- 引用dubbo 服务 -->
 	<dubbo:application name="pinyougou-manager-web" />

@@ -12,4 +12,8 @@ public interface ItemSearchService {
 
     public Map<String,Object> search(Map<String,Object> searchMap);
 
+    /**
+     *   保存商品信息到索引库
+     */
+    public void insertProductToSolr(Long id);
 }

@@ -3,8 +3,10 @@ package com.pinyougou.search.service.impl;
 import com.alibaba.druid.sql.ast.expr.SQLCaseExpr;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.pinyougou.mapper.TbItemMapper;
 import com.pinyougou.mapper.TbSpecificationOptionMapper;
 import com.pinyougou.pojo.TbItem;
+import com.pinyougou.pojo.TbItemExample;
 import com.pinyougou.pojo.TbSpecificationOption;
 import com.pinyougou.pojo.TbSpecificationOptionExample;
 import com.pinyougou.search.service.ItemSearchService;
@@ -265,6 +267,32 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             map.put("specMap",specMap);
         }
         return map;
+    }
+
+    @Autowired
+    private TbItemMapper tbItemMapper;
+
+    /**
+     * 保存商品到索引库
+     * @param id
+     */
+    @Override
+    public void insertProductToSolr(Long id) {
+
+        try{
+            TbItemExample example = new TbItemExample();
+            TbItemExample.Criteria criteria = example.createCriteria();
+            criteria.andStatusEqualTo("1").andIsDefaultEqualTo("1");
+
+            List<TbItem> itemList = tbItemMapper.selectByExample(example);
+            solrTemplate.saveBeans(itemList,1000);
+
+            System.out.println("更新索引库中商品,ID:"+id);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
     }
 
 

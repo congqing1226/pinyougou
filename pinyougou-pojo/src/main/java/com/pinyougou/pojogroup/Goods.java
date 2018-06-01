@@ -6,6 +6,7 @@ import com.pinyougou.pojo.TbItem;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author congzi
@@ -32,7 +33,22 @@ public class Goods implements Serializable{
      */
     private List<TbItem> itemList;
 
+
+    /**
+     * 添加扩展属性,用户页面静态化时 保存分类的名称
+     */
+    private Map map;
+
     private List skuList;
+
+
+    public Map getMap() {
+        return map;
+    }
+
+    public void setMap(Map map) {
+        this.map = map;
+    }
 
     public List getSkuList() {
         return skuList;

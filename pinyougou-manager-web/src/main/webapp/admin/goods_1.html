@@ -29,7 +29,7 @@
 
 </head>
 
-<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="searchEntity.auditStatus='0'">
+<body class="hold-transition skin-red sidebar-mini" ng-app="pinyougou" ng-controller="goodsController" ng-init="searchEntity={auditStatus:'0'};findItemCatList()">
   <!-- .box-body -->
                 
                     <div class="box-header with-border">
@@ -86,8 +86,8 @@
 									      <td>{{itemCatList[entity.category1Id]}}</td>
 									      <td>{{itemCatList[entity.category2Id]}}</td>
 									      <td>{{itemCatList[entity.category3Id]}}</td>
-		                                  <td>	                        	
-		                                  	  {{ state[entity.auditStatus] }} 
+		                                  <td>
+											  {{status[entity.auditStatus]}}
 		                                  </td>		                                  
 		                                  <td class="text-center">  
 		                                 	  <a href="goods_edit.html?id={{entity.id}}" class="btn bg-olive btn-xs">修改</a>                 
@@ -97,8 +97,6 @@
 			                      </tbody>
 			                  </table>
 			                  <!--数据列表/-->                        
-							  
-							 
                         </div>
                         <!-- 数据表格 /-->
                          <tm-pagination conf="paginationConf"></tm-pagination>

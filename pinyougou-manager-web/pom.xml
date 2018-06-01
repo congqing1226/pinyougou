@@ -138,6 +138,12 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- 页面静态化 -->
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+        </dependency>
+
 
     </dependencies>
 

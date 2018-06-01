@@ -128,6 +128,11 @@
             <artifactId>pinyougou-search-interface</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.pinyougou</groupId>
+            <artifactId>pinyougou-user-interface</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
 
     </dependencies>
 

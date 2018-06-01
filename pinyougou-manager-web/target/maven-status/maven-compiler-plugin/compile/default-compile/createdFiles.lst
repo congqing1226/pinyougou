@@ -7,6 +7,7 @@ com\pinyougou\manager\controller\SellerController.class
 com\pinyougou\manager\controller\SpecificationOptionController.class
 com\pinyougou\manager\controller\TypeTemplateController.class
 com\pinyougou\manager\controller\UploadController.class
+com\pinyougou\manager\controller\HtmlController.class
 com\pinyougou\manager\controller\ContentController.class
 com\pinyougou\manager\controller\GoodsDescController.class
 com\pinyougou\manager\controller\SpecificationController.class

@@ -6,4 +6,5 @@ com\pinyougou\sellergoods\service\BrandService.class
 com\pinyougou\sellergoods\service\SpecificationOptionService.class
 com\pinyougou\sellergoods\service\SellerService.class
 com\pinyougou\sellergoods\service\GoodsService.class
+com\pinyougou\sellergoods\service\StaticPageService.class
 com\pinyougou\sellergoods\service\TypeTemplateService.class

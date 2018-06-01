@@ -110,6 +110,13 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-solr</artifactId>
+            <version>1.5.5.RELEASE</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.pinyougou</groupId>
             <artifactId>pinyougou-sellergoods-interface</artifactId>
             <version>1.0-SNAPSHOT</version>
@@ -124,6 +131,8 @@
             <artifactId>pinyougou-common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+
 
     </dependencies>
 
