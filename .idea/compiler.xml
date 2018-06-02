@@ -27,6 +27,7 @@
         <module name="pinyougou-staticpage-service" />
         <module name="pinyougou-user-interface" />
         <module name="pinyougou-user-service" />
+        <module name="pinyougou-user-web" />
         <module name="pinyougoucontentinterface" />
       </profile>
     </annotationProcessing>
@@ -54,6 +55,7 @@
       <module name="pinyougou-staticpage-service" target="1.8" />
       <module name="pinyougou-user-interface" target="1.8" />
       <module name="pinyougou-user-service" target="1.8" />
+      <module name="pinyougou-user-web" target="1.8" />
       <module name="pinyougoucontentinterface" target="1.8" />
       <module name="spring-redis" target="1.8" />
       <module name="spring-solr" target="1.8" />
