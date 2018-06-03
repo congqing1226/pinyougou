@@ -62,10 +62,19 @@ app.controller('itemController',function($scope){
 	}
 
 	//添加商品到购物车
-	$scope.addToCart=function(){
-		alert('skuid:'+$scope.sku.id);				
-	}
 
+    /**
+     * 跨域调用
+     *  将商品添加到购物车
+     */
+    $scope.addGoodsToCart = function () {
+        $http.get('http://localhost:9105/cart/addGoodsToCartList.do?itemId='
+            +$scope.sku.id+'&num='+$scope.num).success(
+            function (response) {
+                alert(response);
+            }
+        );
+    }
 	
 
 });
