@@ -154,12 +154,24 @@
 				</ul>
 				<!-- 面包屑 搜索栏 -->
 				<ul class="tags-choose">
-					<li class="tag" ng-if="searchMap.category != '' ">商品分类: {{searchMap.category}}<i class="sui-icon icon-tb-close" ng-click="removeSearchItem('category')"></i></li>
-					<li class="tag" ng-if="searchMap.brand != '' && keywordsIsBrand()==false ">品牌: {{searchMap.brand}}<i class="sui-icon icon-tb-close" ng-click="removeSearchItem('brand')"></i></li>
+					<li class="tag" ng-if="searchMap.category != '' ">
+						商品分类: {{searchMap.category}}
+						<i class="sui-icon icon-tb-close" ng-click="removeSearchItem('category')"></i>
+					</li>
 
-					<li class="tag" ng-repeat="(key,value) in searchMap.spec">{{key}}:{{value}}<i class="sui-icon icon-tb-close" ng-click="removeSearchItem(key)"></i></li>
+					<li class="tag" ng-if="searchMap.brand != '' && keywordsIsBrand()==false ">
+						品牌: {{searchMap.brand}}
+						<i class="sui-icon icon-tb-close" ng-click="removeSearchItem('brand')"></i>
+					</li>
+
+					<li class="tag" ng-repeat="(key,value) in searchMap.spec">
+						{{key}}:{{value}}<i class="sui-icon icon-tb-close" ng-click="removeSearchItem(key)">
+					</i></li>
+
 					<li class="tag" ng-if="searchMap.price!=''" ng-click="removeSearchItem('price')">
-						价格：{{searchMap.price}}<i  class="sui-icon icon-tb-close"></i></li>
+						价格：{{searchMap.price}}<i  class="sui-icon icon-tb-close">
+
+					</i></li>
 				</ul>
 
 				<div class="clearfix"></div>
@@ -175,6 +187,7 @@
 						</span>
 					</div>
 				</div>
+
 				<div class="type-wrap logo">
 					<div class="fl key brand">品牌</div>
 					<div class="value logos">

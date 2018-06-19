@@ -3,29 +3,87 @@
 	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 						http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security.xsd">
-	
-	
-	<http pattern="/css/**" security="none"></http> 
-	<http pattern="/img/**" security="none"></http>
-	<http pattern="/js/**" security="none"></http>
-	<http pattern="/plugins/**" security="none"></http> 
-	 
-	<http entry-point-ref="casProcessingFilterEntryPoint">      
-        <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>        
+
+    <!--##################### http请求的拦截规则配置 - 要放行的访问资源 ##################-->
+            <http pattern="/css/**" security="none"></http>
+            <http pattern="/img/**" security="none"></http>
+            <http pattern="/js/**" security="none"></http>
+            <http pattern="/plugins/**" security="none"></http>
+
+            <http pattern="/register.html" security="none"></http>
+            <http pattern="/user/add.do" security="none"></http>
+            <http pattern="/user/sendCode.do" security="none"></http>
+
+    <!--############ entry-point-ref="第三方登录入口"，可以在访问系统首页的时候进行登录跳转 ############-->
+	<http entry-point-ref="casProcessingFilterEntryPoint">
+        <!--配置拦截规则设置 访问用户必须拥有 ROLE_USER 角色-->
+        <intercept-url pattern="/**" access="hasRole('ROLE_USER')"/>
+
         <custom-filter position="CAS_FILTER" ref="casAuthenticationFilter" />      
         <custom-filter ref="requestSingleLogoutFilter" before="LOGOUT_FILTER"/>  
         <custom-filter ref="singleLogoutFilter" before="CAS_FILTER"/>  
     </http>
-    
+
+    <beans:bean id="casAuthenticationFilter"
+                class="org.springframework.security.cas.web.CasAuthenticationFilter">
+        <beans:property name="authenticationManager" ref="authenticationManager"/>
+    </beans:bean>
+
+
+    <!--配置CAS服务器的基本信息-->
+    <beans:bean id="casProcessingFilterEntryPoint"
+                class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
+        <!-- 单点登录服务器登录URL -->
+        <beans:property name="loginUrl" value="http://localhost:9000/cas/login"/>
+        <beans:property name="serviceProperties" ref="serviceProperties"/>
+    </beans:bean>
+
+
+    <beans:bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">
+
+        <!--这里的service 必须是一个由CasAuthenticationFilter 监控的URL,当前项目的访问地址-->
+        <beans:property name="service" value="http://localhost:9105/login/cas"/>
+
+        <!--这个sendRenew默认是false，但如果你的程序特别敏感就应该设置成true。
+                            这个参数作用是，告诉CAS登录服务，一个单点登录没有到达-->
+        <beans:property name="sendRenew" value="false"/>
+    </beans:bean>
+
+
     <!-- 认证管理器 -->
-	<authentication-manager alias="authenticationManager">
-		<authentication-provider  ref="casAuthenticationProvider">
-		</authentication-provider>
-	</authentication-manager>
-	
-	
-	
-	<!-- 单点登出  开始  -->  
+    <authentication-manager alias="authenticationManager">
+        <authentication-provider  ref="casAuthenticationProvider">
+        </authentication-provider>
+    </authentication-manager>
+
+
+    <!-- CasAuthenticationProvider中需要自行配置一个继承UserDetailsService接口的实现类，
+      来保存用户信息和权限信息。 登录验证成功后获得用户权限信息的途径 -->
+    <beans:bean id="casAuthenticationProvider"     class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
+
+        <beans:property name="authenticationUserDetailsService">
+            <beans:bean class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">
+                <beans:constructor-arg ref="userDetailsService" />
+            </beans:bean>
+        </beans:property>
+
+        <beans:property name="serviceProperties" ref="serviceProperties"/>
+        <beans:property name="ticketValidator">
+            <beans:bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+                <beans:constructor-arg index="0" value="http://localhost:9000/cas"/>
+            </beans:bean>
+        </beans:property>
+        <beans:property name="key" value="an_id_for_this_auth_provider_only"/>
+    </beans:bean>
+
+    <!-- 认证类 -->
+    <beans:bean id="userDetailsService" class="com.pinyougou.user.service.UserDetailServiceImpl"/>
+
+
+
+
+
+    <!-- 单点登出  开始  -->
     
     <beans:bean id="singleLogoutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter"/>  
         
@@ -39,36 +97,6 @@
     <!-- 单点登出  结束 -->  
     
     
-    <beans:bean id="casAuthenticationFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter">  
-        <beans:property name="authenticationManager" ref="authenticationManager"/>  
-    </beans:bean>  
-	
-    <beans:bean id="casProcessingFilterEntryPoint" class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">  
-        <!-- 单点登录服务器登录URL -->  
-        <beans:property name="loginUrl" value="http://localhost:9000/cas/login"/>  
-        <beans:property name="serviceProperties" ref="serviceProperties"/>  
-    </beans:bean>  
-    
-    <!-- 认证类 -->
-	<beans:bean id="userDetailsService" class="com.pinyougou.user.service.UserDetailServiceImpl"/>  
-	
-	<beans:bean id="casAuthenticationProvider"     class="org.springframework.security.cas.authentication.CasAuthenticationProvider">  
-        <beans:property name="authenticationUserDetailsService">  
-            <beans:bean class="org.springframework.security.core.userdetails.UserDetailsByNameServiceWrapper">  
-                <beans:constructor-arg ref="userDetailsService" />  
-            </beans:bean>  
-        </beans:property>  
-        <beans:property name="serviceProperties" ref="serviceProperties"/>  
-        <beans:property name="ticketValidator">  
-            <beans:bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">  
-                <beans:constructor-arg index="0" value="http://localhost:9000/cas"/>  
-            </beans:bean>  
-        </beans:property>  
-        <beans:property name="key" value="an_id_for_this_auth_provider_only"/>  
-    </beans:bean>  
-	<beans:bean id="serviceProperties" class="org.springframework.security.cas.ServiceProperties">  
-        <!--[login/cas]是Spring Security 4.0后修改的地址、跟3.X版本完全不同、请勿修改-->  
-        <beans:property name="service" value="http://localhost:9105/login/cas"/>
-        <beans:property name="sendRenew" value="false"/>  
-    </beans:bean>  
+
+
 </beans:beans>

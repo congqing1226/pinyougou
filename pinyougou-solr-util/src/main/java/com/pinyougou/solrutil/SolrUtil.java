@@ -1,16 +1,22 @@
 package com.pinyougou.solrutil;
 
+import com.alibaba.fastjson.JSON;
 import com.pinyougou.mapper.TbItemMapper;
 import com.pinyougou.pojo.TbItem;
 import com.pinyougou.pojo.TbItemExample;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.data.solr.core.SolrTemplate;
+import org.springframework.data.solr.core.query.Query;
+import org.springframework.data.solr.core.query.SimpleQuery;
 import org.springframework.data.solr.server.support.SolrServerUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.test.context.TestExecutionListeners;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author congzi
@@ -38,7 +44,11 @@ public class SolrUtil {
         List<TbItem> list = itemMapper.selectByExample(example);
 
         for(TbItem item:list){
-            System.out.println(item.getTitle());
+
+            //将JSON数据转换成MAP ,作为动态域数据保存到索引库
+            String spec = item.getSpec();
+            Map specMap = JSON.parseObject(spec);
+            item.setSpecMap(specMap);
         }
         System.out.println("开始导入数据....");
 
@@ -59,5 +69,13 @@ public class SolrUtil {
       }catch (Exception e){
           e.printStackTrace();
       }
+
     }
+
+    public  void testDeleteAll(){
+        Query query=new SimpleQuery("*:*");
+        solrTemplate.delete(query);
+        solrTemplate.commit();
+    }
+
 }

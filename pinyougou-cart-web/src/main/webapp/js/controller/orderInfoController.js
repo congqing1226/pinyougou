@@ -85,7 +85,13 @@ app.controller('orderInfoController',function($scope,addressService,cartService)
 	$scope.submitOrder=function(){
 		cartService.submitOrder($scope.order ).success(
 			function(response){
-				alert(response.message);				
+				alert(response.message);
+				//提交成功,并且是微信支付,跳转到支付页面
+				if(response.success && $scope.order.paymentType == '1'){
+						location.href = 'pay.html';
+				}
+
+
 			}
 		);		
 	}

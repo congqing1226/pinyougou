@@ -1,7 +1,13 @@
 package com.pinyougou.order.service.impl;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.pinyougou.mapper.TbPayLogMapper;
+import com.pinyougou.pojo.TbPayLog;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 
@@ -18,6 +24,7 @@ import com.pinyougou.pojogroup.Cart;
 import com.pinyougou.order.service.OrderService;
 
 import entity.PageResult;
+import util.IdWorker;
 
 /**
  * 服务实现层
@@ -53,46 +60,128 @@ public class OrderServiceImpl implements OrderService {
 	
 	@Autowired
 	private TbOrderItemMapper orderItemMapper;
-	
+
+	@Autowired
+	private IdWorker idWorker;
+
+
+	@Autowired
+	private TbPayLogMapper payLogMapper;
+
 	/**
 	 * 增加
 	 */
 	@Override
 	public void add(TbOrder order) {
 		
-		//获取购物车（redis）中的数据		
-		List<Cart> cartList= (List<Cart>) redisTemplate.boundHashOps("cartList").get(order.getUserId());
-				
-		//循环购物车列表，循环向订单表插入数据
-		
-		for(Cart cart:cartList){
-			TbOrder tborder=new TbOrder();
-			tborder.setPaymentType(order.getPaymentType());//支付类型
-			tborder.setStatus("1");//状态1：未付款
-			tborder.setCreateTime(new Date());//创建日期
-			tborder.setUpdateTime(new Date());//更新日期
-			tborder.setUserId(order.getUserId());//用户ID
-			tborder.setReceiverAreaName(order.getReceiverAreaName());//地址
-			tborder.setReceiverMobile(order.getReceiverMobile());//电话
-			tborder.setReceiver(order.getReceiver());//收货人
-			tborder.setSellerId(cart.getSellerId());//商家ID
-			
-			orderMapper.insert(tborder);//保存到订单主表
-			
-			double money=0;
-			for(TbOrderItem orderItem:cart.getOrderItemList()){
-				money+=orderItem.getTotalFee().doubleValue();
-				
-				orderItem.setOrderId(tborder.getOrderId());//订单ID
-				orderItem.setSellerId(cart.getSellerId());//商家ID
-				orderItemMapper.insert(orderItem);//保存到订单明细表
+		//从redis中获取购物车数据
+		List<Cart> cartList = (List<Cart>) JSONArray.parseArray((String) redisTemplate.boundHashOps("cartList").get(order.getUserId()),Cart.class);
+
+		/**
+		 *  生成订单支付日志
+		 *  	总金额
+		 *  	订单集合(支付日志中 有一个字段专门保存该笔支付中包含哪些订单)
+		 */
+
+		double totalMoney = 0;
+		List<String> orderList = new ArrayList<>();
+
+		//循环购物车列表, 循环向订单表添加数据
+		for(Cart cart : cartList){
+			TbOrder order1 = new TbOrder();
+			//订单编号, 分布式ID
+			long id = idWorker.nextId();
+			order1.setOrderId(id);
+
+			//支付类型
+			order1.setPaymentType(order.getPaymentType());
+			//状态
+			order1.setStatus("1");
+			order1.setCreateTime(new Date());
+			order1.setUpdateTime(new Date());
+			order1.setUserId(order1.getUserId());
+			//地址
+			order1.setReceiverAreaName(order1.getReceiverAreaName());
+			//电话
+			order1.setReceiverMobile(order1.getReceiverMobile());
+			//收货人
+			order1.setReceiver(order.getReceiver());
+			//商家ID
+			order1.setSellerId(order1.getSellerId());
+
+			//保存订单主表
+			orderMapper.insert(order1);
+
+			/**
+			 * 支付订单所需要的 订单号
+			 */
+			orderList.add(order1.getOrderId()+"");
+
+			double money = 0;
+			//修改订单明细表
+			for(TbOrderItem orderItem : cart.getOrderItemList()){
+
+				//计算订单中所有商品的总价
+				money += orderItem.getTotalFee().doubleValue();
+
+				//订单项表 与订单表 多对一的关系
+				orderItem.setOrderId(order1.getOrderId());
+				orderItem.setSellerId(order1.getSellerId());
+
+				//修改订单明细
+				orderItemMapper.insert(orderItem);
 			}
-			tborder.setPayment(new BigDecimal(money));//合计金额 
-			
-			orderMapper.updateByPrimaryKey(tborder);//更新
+
+			//金额累加
+			totalMoney += money;
+
+			order1.setPayment(new BigDecimal(money));
+			//更新订单表的总金额
+			orderMapper.updateByPrimaryKey(order1);
+
 		}
+
+
+		/**
+		 * 判断是否是微信支付, 如果是微信支付,生成订单log
+		 */
+		if("1".equals(order.getPaymentType())){
+			//创建支付日志对象
+			TbPayLog payLog = new TbPayLog();
+			//日志创建时间
+			payLog.setCreateTime(new Date());
+			//保存订单ID列表
+			String  ids = orderList.toString().replace("[","").replace("]","").replace(" ","");
+			payLog.setOrderList(ids);
+
+			//支付订单号的生成
+			payLog.setOutTradeNo(String.valueOf(idWorker.nextId()));
+			//支付方式 : 微信
+			payLog.setPayType("1");
+			//订单金额 分
+			payLog.setTotalFee((long)(totalMoney * 100));
+
+			//支付状态
+			payLog.setTradeState("0");
+
+			//用户ID
+			payLog.setUserId(order.getUserId());
+
+			payLogMapper.insert(payLog);
+
+			/**
+			 * 将生成的订单日志信息保存到缓存
+			 * 		生成二维码时,需要使用订单的一些信息
+			 * 		用户ID作为key
+			 */
+			redisTemplate.boundHashOps("payLog").put(order.getUserId(), JSON.toJSONString(payLog));
+
+		}
+
 		//清除购物车中的数据
 		redisTemplate.boundHashOps("cartList").delete(order.getUserId());
+
+
 	}
 
 	

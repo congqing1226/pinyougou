@@ -251,7 +251,7 @@ app.controller('goodsController' ,function($scope,$controller,$location,
      */
 
 	$scope.updateSpecAttribute = function($event, name , value){
-
+		debugger;
 		//判断当前操作的规格名称, 是否在 $scope.entity.goodsDesc.specificationItems 这个集合变量中
         var specList=  $scope.entity.goodsDesc.specificationItems;
         /**
@@ -284,6 +284,7 @@ app.controller('goodsController' ,function($scope,$controller,$location,
 	 * 构建SKU 表格
      */
 	$scope.createSKUTable = function(){
+
 		//初始化一个集合
 		var list = [{spec:{},price:0,stockCount:99999}];
 
@@ -296,6 +297,7 @@ app.controller('goodsController' ,function($scope,$controller,$location,
          */
 
         for(var i=0;i< specList.length;i++ ){//循环规格
+
             if(specList[i].attributeValue.length>0){
                 list=addColumns(list, specList[i].attributeName, specList[i].attributeValue );
             }

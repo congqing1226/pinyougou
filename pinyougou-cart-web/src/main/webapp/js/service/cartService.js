@@ -13,4 +13,9 @@ app.service('cartService',function($http){
 	}
 
 
+	//在订单详情页-点击提交订单
+	this.submitOrder = function(order){
+		return $http.post('order/add.do',order);
+    }
+
 });

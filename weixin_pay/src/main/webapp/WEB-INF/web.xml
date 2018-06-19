@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+  <servlet>
+    <description></description>
+    <display-name>NativeServlet</display-name>
+    <servlet-name>NativeServlet</servlet-name>
+    <servlet-class>com.itcast.servlet.NativeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>NativeServlet</servlet-name>
+    <url-pattern>/NativeServlet</url-pattern>
+  </servlet-mapping>
+
+
+  <servlet>
+    <description></description>
+    <display-name>PayStatusCheckServlet</display-name>
+    <servlet-name>PayStatusCheckServlet</servlet-name>
+    <servlet-class>com.itcast.servlet.PayStatusCheckServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>PayStatusCheckServlet</servlet-name>
+    <url-pattern>/PayStatusCheckServlet</url-pattern>
+  </servlet-mapping>
+</web-app>

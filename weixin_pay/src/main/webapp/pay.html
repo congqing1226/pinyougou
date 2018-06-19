@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>支付</title>
+<script type="text/javascript" src="js/qrcode.js"></script>
+<script type="text/javascript" src="js/angular.min.js"></script>
+<script type="text/javascript">
+   var app=angular.module('weixinpay',[]);
+   app.controller('payController' ,function($scope,$http){
+	   
+	   //生成二维码
+	   $scope.createNative=function(){
+		   $http.get('NativeServlet').success(
+				function(response){
+					if(response.return_code=='SUCCESS'){
+					    //二维码容错级别
+						var ewm=qrcode(10,'H');
+						//二维码所包含的访问路径
+						ewm.addData(response.code_url);
+						ewm.make();
+
+						//将二维码图片写入打开DIV
+						document.getElementById('qr').innerHTML=ewm.createImgTag();
+						$scope.out_trade_no=response.out_trade_no;//订单号
+						
+						checkOrderStatus($scope.out_trade_no);//查询订单状态
+						
+					}else{
+						alert("请求失败");						
+					}
+					
+				}	   
+		   );		   
+	   }
+	   
+	   //检测订单状态
+	   checkOrderStatus=function(out_trade_no){
+		   $http.get("PayStatusCheckServlet?out_trade_no="+out_trade_no).success(
+				function(response){
+					if(response.trade_state=='SUCCESS'){//如果成功
+						location.href="success.html";//跳转到成功页面
+					}else{
+						alert("出错啦~~~");
+					}
+				}		   
+		   );
+	   }
+	   
+	   
+   });
+
+
+</script>
+</head>
+<body ng-app="weixinpay" ng-controller="payController" ng-init="createNative()">
+请扫码完成支付<br>
+<div id="qr"></div>
+
+订单号：{{out_trade_no}}
+</body>
+</html>

@@ -75,7 +75,10 @@ app.controller('itemController',function($scope,$http){
         $http.get('http://localhost:9106/cart/addGoodsToCartList.do?itemId='
         +$scope.sku.id+'&num='+$scope.num,{'withCredentials':true}).success(
             function (response) {
-                alert(response);
+                if(response.success){
+                    alert(response.message);
+                }
+
             }
         );
     }

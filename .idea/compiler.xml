@@ -35,6 +35,7 @@
         <module name="pinyougou-user-service" />
         <module name="pinyougou-user-web" />
         <module name="pinyougoucontentinterface" />
+        <module name="weixin_pay" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="1.8">
@@ -72,6 +73,7 @@
       <module name="spring-redis" target="1.8" />
       <module name="spring-solr" target="1.8" />
       <module name="springfreemarkerDemo" target="1.8" />
+      <module name="weixin_pay" target="1.8" />
     </bytecodeTargetLevel>
   </component>
 </project>

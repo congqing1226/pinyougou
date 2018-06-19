@@ -65,4 +65,6 @@ public interface SellerService {
 	 */
 	public void updateStatus(String sellerId , String status);
 
+	public TbSeller findSellerByUserName(String sellerId);
+
 }

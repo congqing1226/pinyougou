@@ -173,4 +173,19 @@ public class SellerServiceImpl implements SellerService {
 		sellerMapper.updateByPrimaryKey(tbSeller);
 	}
 
+	public TbSeller findSellerByUserName(String sellerId){
+
+		TbSellerExample example = new TbSellerExample();
+		//审核状态为 审核通过
+		example.createCriteria().andSellerIdEqualTo(sellerId).andStatusEqualTo("1");
+
+		List<TbSeller> tbSellers = sellerMapper.selectByExample(example);
+
+		if(tbSellers != null && tbSellers.size() > 0){
+			return tbSellers.get(0);
+		}
+		return null;
+	}
+
+
 }

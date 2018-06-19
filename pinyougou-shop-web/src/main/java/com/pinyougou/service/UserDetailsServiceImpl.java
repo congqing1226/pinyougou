@@ -48,7 +48,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         /**
          * 校验用户姓名
          */
-        TbSeller seller = sellerService.findOne(username);
+        TbSeller seller = sellerService.findSellerByUserName(username);
         if(seller == null){
             return null;
         }else if(!seller.getStatus().equals("1")){

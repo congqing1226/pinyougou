@@ -285,6 +285,13 @@ public class ItemSearchServiceImpl implements ItemSearchService {
             criteria.andStatusEqualTo("1").andIsDefaultEqualTo("1");
 
             List<TbItem> itemList = tbItemMapper.selectByExample(example);
+            for(TbItem item:itemList){
+
+                //将JSON数据转换成MAP ,作为动态域数据保存到索引库
+                String spec = item.getSpec();
+                Map specMap = JSON.parseObject(spec);
+                item.setSpecMap(specMap);
+            }
             solrTemplate.saveBeans(itemList,1000);
 
             System.out.println("更新索引库中商品,ID:"+id);
